@@ -51,11 +51,15 @@ fi
 
 #update openwrt packages
 echo "======================= update openwrt pakcages ====================="
-cd ./openwrt-46386-code
+cd ./$LOCAL_TRUNK
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
 #make openwrt image 
 echo "======================= building openwrt image ====================="
+
+cp -f $CONFIG_FILE $CONFIG_DIST_FILE
+
 make V=99
 
