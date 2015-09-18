@@ -1,0 +1,12 @@
+
+when you find that have many TIME_WAIT, plaese follow command as below to fix 
+
+1. open the /etc/sysctl.conf, then config below key-value into file
+
+	net.ipv4.tcp_syncookies = 1
+	net.ipv4.tcp_tw_reuse = 1
+	net.ipv4.tcp_tw_recycle = 1
+	net.ipv4.tcp_fin_timeout = 30
+
+2. sysctl -p
+
