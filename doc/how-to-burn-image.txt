@@ -1,0 +1,33 @@
+HOW TO BURN IMAGE INTO BOARD
+
+1. Download image into board via tftp
+
+	# uboot image
+
+	tftp 0x1000000 fastboot-burn.bin
+	mmc write 0 0x1000000 0x0 0x400
+
+	# kernel image
+	
+	tftp 0x1000000 openwrt-hisi_x5hd-zImage
+	mmc write 0 0x1000000 0x6800 0x4000
+
+	# dkb
+
+	tftp 0x2000000 hisi-x5hd2-dkb.dtb
+	mmc write 0 0x2000000 0x4800 30
+
+	# rootfs image
+
+	tftp 0x1000000 openwrt-hisi_x5hd-ext4-sysupgrade.bin
+	mmc write 0 0x1000000 0xA800 0x40000
+	mmc write 0 0x9000000 0x4A800 0x40000
+	mmc write 0 0x17000000 0x8A800 0x40000
+
+2. Set bootarges
+	setenv bootcmd 'mmc read 0 0x1000000 0x6800 0x8000;mmc read 0 0x2000000 0x4800 0x800;bootz 0x1000000 - 0x2000000'
+	setenv bootargs 'mem=1G console=ttyAMA0,115200 root=/dev/mmcblk0p6 rootfstype=ext4 rootwait blkdevparts=mmcblk0:1M(boot),4M(baseparam),4M(pqparam),4M(logo),8M(kernel),96M(rootfs),-(others) mmz=ddr,0,0,300M'
+	
+3. saveenv
+
+4. reset 	
