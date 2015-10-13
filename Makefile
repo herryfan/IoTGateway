@@ -27,6 +27,7 @@ SOURCE_FILES := $(SOURCE_DIR)/main.cpp
 SOURCE_FILES += $(SOURCE_DIR)/Gateway.cpp
 SOURCE_FILES += $(SOURCE_DIR)/CfgService.cpp
 SOURCE_FILES += $(SOURCE_DIR)/NET_Service.cpp
+SOURCE_FILES += $(SOURCE_DIR)/NET_Mcast_Service.cpp
 
 #deinfe targetes
 .PHONY: all
