@@ -34,6 +34,11 @@ void client()
     int socket_fd;
     struct sockaddr_in local_address;
     Dgram_Multicast mcast(gport, ggroup_ip);
+    char buffer[0xff];
+    sockaddr_in peer_addr;
+    socklen_t socklen;
+    socklen = sizeof(struct sockaddr_in);
+
 
     socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (socket_fd == -1)
@@ -65,8 +70,14 @@ void client()
             printf("Failed to send message to group\n");
             return;
         }
-
-        usleep(100000);
+            
+       int revLen = recvfrom(socket_fd,buffer,sizeof(buffer),0,(struct
+                   sockaddr*)&peer_addr, &socklen);
+    
+       printf("recv %s from [%s:%d]\n", buffer,
+               inet_ntoa(peer_addr.sin_addr), peer_addr.sin_port);
+        
+        sleep(5);
     }
 }
 
@@ -125,8 +136,8 @@ int main(int argc, char** argv)
 
 
     // Set defualt value
-    gport = 5454;
-    strncpy(ggroup_ip, "224.0.1.1", 0xff);
+    gport = 5683;
+    strncpy(ggroup_ip, "224.0.1.187", 0xff);
 
     while ((opt = getopt(argc, argv, "t:pg")) != -1 )
     {
