@@ -5,9 +5,8 @@
 #include "Config.h"
 #include "CfgService.h"
 
-CfgService::CfgService(const char* cfgfile)
-:cfg_file(cfgfile),
- ipv6_flag_(0)
+CfgService::CfgService()
+:ipv6_flag_(0)
 {
 }
 
@@ -15,18 +14,19 @@ CfgService::~CfgService()
 {
 }
 
-int CfgService::Init()
+int CfgService::Init(const char* cfile_name)
 {
     ACE_Configuration_Heap cfg;
     ACE_Ini_ImpExp ini(cfg);
+    cfg_file_ = cfile_name;
 
     cfg.open();
 
-    if ( ini.import_config(cfg_file.c_str()) == -1)
+    if ( ini.import_config(cfg_file_.c_str()) == -1)
     {
         ACE_DEBUG((LM_DEBUG, 
         "Failed to open config file %s. please check...\n",
-        cfg_file.c_str()));
+        cfg_file_.c_str()));
 
         return -1;
     }
@@ -61,15 +61,32 @@ int CfgService::Init()
     }
 
     ipv6_flag_ = atoi(value.c_str());
-    
-    multicast_ipv4_.set("224.0.1.187:5683");
-    multicast_ipv6_.set("FF0X::FD:5683");
 
+
+    ACE_TString server_uri("server_uri");
+
+    code = cfg.get_string_value(key, server_uri.c_str(), svc_uri_);
+
+    if (code < 0)
+    {
+        ACE_DEBUG((LM_DEBUG,
+                    "Failed to get server_uri\n"));
+
+        return -1;
+    }
+    
+    multicast_ipv4_.set(5683,"224.0.1.187");
+    multicast_ipv6_.set(5683,"ff05::fd", AF_INET6);
+    
+    //
+    // Debug information
+    //
     ACE_DEBUG((LM_DEBUG,
                "dump cfg information\n"));
                
     ACE_DEBUG((LM_DEBUG,"ipv6_flag_ = %d\n", ipv6_flag_));
-
+    ACE_DEBUG((LM_DEBUG,"server_uri = %s\n", svc_uri_.c_str()));
+    
     ACE_TCHAR s[ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16];
     multicast_ipv4_.addr_to_string(s, ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16);
     ACE_DEBUG ((LM_DEBUG, ACE_TEXT ("%s\n"), s));
@@ -88,6 +105,11 @@ int CfgService::Close()
 bool CfgService::IsIpv6()
 {
     return ipv6_flag_ > 0 ? true : false;
+}
+
+const char* CfgService::GetServerUri()
+{
+    return svc_uri_.c_str();
 }
 
 ACE_INET_Addr& CfgService::GetMcastAddrV4()

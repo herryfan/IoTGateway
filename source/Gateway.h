@@ -7,9 +7,6 @@
 
 #include "Config.h"
 
-class CfgService;
-class NetService;
-
 class Gateway
 {
 public:
@@ -21,12 +18,10 @@ public:
 
 private:
 
-    CfgService* cfgsvc_;
-    NetService* netsvc_;
 };
 
 // Use ACE Singleton wrapper Gateway object.
-typedef ACE_Singleton<Gateway, ACE_Null_Mutex> IoTGateway;
+typedef ACE_Singleton<Gateway, ACE_Mutex> IoTGateway;
 
 #endif /* __GATE_WAY_H__*/
 

@@ -17,9 +17,11 @@
 #include <ace/Reactor.h>  
 #include <ace/Select_Reactor.h>  
 #include <ace/Thread_Manager.h>
-
-#include <string>
-
+#include <ace/SOCK_Dgram.h>
+#include <ace/SOCK_Dgram_Mcast.h>
+#include <ace/OS_NS_string.h>
+#include <ace/OS_NS_unistd.h>
+#include <ace/os_include/os_netdb.h>
 
 
 #endif //__CONFIG_H__

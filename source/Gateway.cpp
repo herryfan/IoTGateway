@@ -10,32 +10,16 @@
 
 int Gateway::Initialize()
 {
-    cfgsvc_ = new CfgService("gateway.conf");
-
-    if (cfgsvc_ == 0 )
-    {
-        ACE_DEBUG((LM_DEBUG,
-                    "Failed to allocate CfgService object\n"));
-
-        return -1;
-    }
-
-    if (cfgsvc_->Init() == -1)
+    int code = Cfg_Service::instance()->Init("gateway.conf");
+    
+    if (code == -1 )
     {
         return -1;
     }
 
-    netsvc_ = new NetService();
-
-    if (netsvc_ == 0 )
-    {
-        ACE_DEBUG((LM_DEBUG,
-                    "Failed to allocate NetService object\n"));
-
-        return -1;
-    }
-
-    if (netsvc_->Init() == -1 )
+    code = Net_Service::instance()->Init();
+    
+    if (code == -1 )
     {
         return -1;
     }
@@ -45,16 +29,35 @@ int Gateway::Initialize()
 
 int Gateway::Start()
 {
+    int code = Net_Service::instance()->Start();
+
+    if (code == -1)
+    {
+        ACE_DEBUG((LM_DEBUG,
+                    "Failed to start net service \n"));
+        return -1;
+    }
+
     return 0;
 }
 
 int Gateway::Stop()
 {
+    Net_Service::instance()->Close();
+    
     return 0;
 }
 
 int Gateway::Run()
 {
+    int code = Net_Service::instance()->Run();
+
+    if (code == -1 )
+        return -1;
+
+    
+    ACE_Thread_Manager::instance()->wait();
+    
     return 0;
 }
 
