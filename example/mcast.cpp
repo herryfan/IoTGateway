@@ -137,7 +137,7 @@ int main(int argc, char** argv)
 
     // Set defualt value
     gport = 5683;
-    strncpy(ggroup_ip, "224.0.1.187", 0xff);
+    strncpy(ggroup_ip, "ff05::fd", 0xff);
 
     while ((opt = getopt(argc, argv, "t:pg")) != -1 )
     {

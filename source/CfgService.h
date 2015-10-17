@@ -16,19 +16,16 @@ public:
 
     int Init(const char* cfile_name);
     int Close();
-    bool IsIpv6();
-    ACE_INET_Addr& GetMcastAddrV4();
-    ACE_INET_Addr& GetMcastAddrV6();
-    const char* GetServerUri();
+    ACE_INET_Addr& GetMcastAddr();
+    ACE_INET_Addr& GetServerAddr();
     
 private:
 
-    u_int ipv6_flag_;
-    ACE_INET_Addr multicast_ipv4_;
-    ACE_INET_Addr multicast_ipv6_;
+    ACE_INET_Addr multicast_addr_;
+    ACE_INET_Addr svc_addr_;
+    
     ACE_TString cfg_file_;
     ACE_TString svc_uri_;
-    ;
 };
 
 typedef ACE_Singleton<CfgService, ACE_Mutex> Cfg_Service;

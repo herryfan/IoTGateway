@@ -6,7 +6,6 @@
 #include "CfgService.h"
 
 CfgService::CfgService()
-:ipv6_flag_(0)
 {
 }
 
@@ -47,36 +46,57 @@ int CfgService::Init(const char* cfile_name)
         return -1;
     }
 
-    ACE_TString is_ipv6("is_ipv6");
-    ACE_TString value;
-
-    code = cfg.get_string_value(key, is_ipv6.c_str(), value);
+    /* Get server_ip and port string*/
+    ACE_TString server_ip("server_ip");
+    ACE_TString server_port("server_port");
+    ACE_TString svr_ip;
+    ACE_TString svr_port;
+    
+    code = cfg.get_string_value(key, server_ip.c_str(), svr_ip);
+    code |= cfg.get_string_value(key, server_port.c_str(), svr_port);
 
     if (code < 0 )
     {
-        ACE_DEBUG((LM_DEBUG, 
-        "Failed to get %s\n",is_ipv6.c_str()));
+        ACE_DEBUG((LM_DEBUG,
+                   "Failed to get server ip and port\n"));
 
         return -1;
     }
 
-    ipv6_flag_ = atoi(value.c_str());
+    code = svc_addr_.set(atoi(svr_port.c_str()),svr_ip.c_str());
 
-
-    ACE_TString server_uri("server_uri");
-
-    code = cfg.get_string_value(key, server_uri.c_str(), svc_uri_);
-
-    if (code < 0)
+    if ( code < 0 )
     {
         ACE_DEBUG((LM_DEBUG,
-                    "Failed to get server_uri\n"));
+                    "Failed to set server ip and port,"
+                    "maybe the port and ip not to be correctly config\n"));
+    }
+
+    /* Get multicast ip and port */
+    ACE_TString mcast_ip("multicast_ip");
+    ACE_TString mcast_port("multicast_port");
+    ACE_TString multicast_ip;
+    ACE_TString multicast_port;
+
+    code = cfg.get_string_value(key, mcast_ip.c_str(), multicast_ip);
+    code |= cfg.get_string_value(key, mcast_port.c_str(), multicast_port);
+
+    if (code < 0 )
+    {
+        ACE_DEBUG((LM_DEBUG,
+                   "Failed to get multicast ip and port\n"));
 
         return -1;
     }
-    
-    multicast_ipv4_.set(5683,"224.0.1.187");
-    multicast_ipv6_.set(5683,"ff05::fd", AF_INET6);
+
+    code = multicast_addr_.set(atoi(multicast_port.c_str()),multicast_ip.c_str());
+
+    if ( code < 0 )
+    {
+        ACE_DEBUG((LM_DEBUG,
+                    "Failed to set multicast ip and port,"
+                    "maybe the port and ip not to be correctly config\n"));
+    }
     
     //
     // Debug information
@@ -84,14 +104,11 @@ int CfgService::Init(const char* cfile_name)
     ACE_DEBUG((LM_DEBUG,
                "dump cfg information\n"));
                
-    ACE_DEBUG((LM_DEBUG,"ipv6_flag_ = %d\n", ipv6_flag_));
-    ACE_DEBUG((LM_DEBUG,"server_uri = %s\n", svc_uri_.c_str()));
-    
     ACE_TCHAR s[ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16];
-    multicast_ipv4_.addr_to_string(s, ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16);
+    multicast_addr_.addr_to_string(s, ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16);
     ACE_DEBUG ((LM_DEBUG, ACE_TEXT ("%s\n"), s));
 
-    multicast_ipv6_.addr_to_string(s, ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16);
+    svc_addr_.addr_to_string(s, ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16);
     ACE_DEBUG ((LM_DEBUG, ACE_TEXT ("%s\n"), s));
     
     return 0;
@@ -102,24 +119,14 @@ int CfgService::Close()
     return 0;
 }
 
-bool CfgService::IsIpv6()
+ACE_INET_Addr& CfgService::GetMcastAddr()
 {
-    return ipv6_flag_ > 0 ? true : false;
+    return multicast_addr_;
 }
 
-const char* CfgService::GetServerUri()
+ACE_INET_Addr& CfgService::GetServerAddr()
 {
-    return svc_uri_.c_str();
-}
-
-ACE_INET_Addr& CfgService::GetMcastAddrV4()
-{
-    return multicast_ipv4_;
-}
-
-ACE_INET_Addr& CfgService::GetMcastAddrV6()
-{
-    return multicast_ipv6_;
+    return svc_addr_;
 }
 
 

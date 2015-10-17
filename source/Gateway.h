@@ -11,7 +11,7 @@ class Gateway
 {
 public:
     
-      int Initialize();
+      int Init();
       int Start();
       int Stop();
       int Run();

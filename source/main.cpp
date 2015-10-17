@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 {
     Initialize_ACE_Log();
     
-    if ( IoTGateway::instance()->Initialize() >= 0)
+    if ( IoTGateway::instance()->Init() >= 0)
     {
         int code = IoTGateway::instance()->Start();
 

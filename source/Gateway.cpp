@@ -6,9 +6,10 @@
 #include "Gateway.h"
 #include "CfgService.h"
 #include "NET_Service.h"
+#include "CoAP_Service.h"
 
 
-int Gateway::Initialize()
+int Gateway::Init()
 {
     int code = Cfg_Service::instance()->Init("gateway.conf");
     
@@ -23,7 +24,23 @@ int Gateway::Initialize()
     {
         return -1;
     }
-    
+
+    code = CoAP_Service::instance()->Init();
+
+    if (code == -1 )
+    {
+        return -1;
+    }
+
+    Net_Service::instance()->SetMcast(
+                            CoAP_Service::instance()->GetMcastHandle());
+
+    Net_Service::instance()->RegHandler(CoAP_Service::instance()->GetEventHandler(),
+                                      ACE_Event_Handler::READ_MASK);
+
+    Net_Service::instance()->RegEventHook(CoAPService::EventHook, 
+                                (void*)(CoAP_Service::instance()));
+                                
     return 0;
 }
 
@@ -56,7 +73,7 @@ int Gateway::Run()
         return -1;
 
     
-    ACE_Thread_Manager::instance()->wait();
+    Net_Service::instance()->wait();
     
     return 0;
 }

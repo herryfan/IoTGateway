@@ -7,38 +7,10 @@
 
 static bool break_netsvc_thread_flag = false;
 
-// Net Service thread.
-// do event loop
-static void net_service_thread(void* argv)
-{
-    ACE_DEBUG((LM_DEBUG,
-                "Create Net Service thread\n"));
-
-    int code = 0;
-
-    ACE_Reactor* reactor = (ACE_Reactor*)(argv);
-    reactor->owner (ACE_OS::thr_self ());
-    
-    ACE_Time_Value timeout;
-    timeout.sec(3);
-
-    for (;;)
-    {
-        code = reactor->handle_events(timeout);
-
-        if (break_netsvc_thread_flag)
-        {
-            break;
-        }
-    }
-            
-    ACE_DEBUG((LM_DEBUG,
-                "Return from Net Service thread[%d]\n",code));
-    
-}
-
 NetService::NetService()
-:reactor_(new ACE_Select_Reactor(), true)
+:reactor_(new ACE_Select_Reactor(), true),
+hook_(0),
+hook_argv_(0)
 {
 }
 
@@ -70,13 +42,6 @@ int NetService::Start()
     {
         return -1;
     }
-
-    // registe self into Reactor
-    int code = reactor_.register_handler(&mcast_svc_, 
-                                      ACE_Event_Handler::READ_MASK);
-
-    if (code == -1 )
-        return -1;
     
     return 0;
 }
@@ -85,7 +50,7 @@ int NetService::Start()
 int NetService::Run()
 {
 
-    int code = ACE_Thread_Manager::instance()->spawn((ACE_THR_FUNC)net_service_thread, (void*)&reactor_);
+    int code = activate();
 
     if (code == -1 )
     {
@@ -97,4 +62,54 @@ int NetService::Run()
     return 0;
 }
 
+int NetService::svc()
+{
+    ACE_DEBUG((LM_DEBUG,
+                "Create Net Service thread\n"));
+
+    int code = 0;    
+    reactor_.owner (ACE_OS::thr_self ());
+
+    ACE_Time_Value timeout;
+    timeout.sec(3);
+
+    for (;;)
+    {
+        if (hook_ != 0)
+        {
+          code = (*hook_)(hook_argv_, timeout);
+        }
+        
+        code = reactor_.handle_events(timeout);
+
+        if (break_netsvc_thread_flag)
+        {
+            break;
+        }
+    }
+            
+    ACE_DEBUG((LM_DEBUG,
+                "Return from Net Service thread[%d]\n",code));
+
+    return code;
+}
+
+void NetService::SetMcast(ACE_HANDLE handle)
+{
+    mcast_svc_.SetMcast(handle);
+}
+
+int NetService::RegHandler(ACE_Event_Handler *event_handler,
+               ACE_Reactor_Mask mask)
+{
+    return reactor_.register_handler(event_handler, mask);
+}
+
+int NetService::RegEventHook(EXT_EVENT_HOOK hook, void* argv)
+{
+    hook_ = hook;
+    hook_argv_ = argv;
+
+    return 0;
+}
 

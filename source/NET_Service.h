@@ -8,7 +8,9 @@
 #include "Config.h"
 #include "NET_Mcast_Service.h"
 
-class NetService
+typedef int (*EXT_EVENT_HOOK)(void* argv, ACE_Time_Value& value);
+
+class NetService : public ACE_Task_Base
 {
 public:
     
@@ -19,10 +21,21 @@ public:
     int Start();
     int Close();
     int Run();
+
+    void SetMcast(ACE_HANDLE handle);
+    int RegHandler(ACE_Event_Handler *event_handler,
+                   ACE_Reactor_Mask mask);
+
+    int RegEventHook(EXT_EVENT_HOOK hook, void* argv);
+    virtual int svc (void);
     
 private:
+    
     NetMcastService mcast_svc_;
     ACE_Reactor reactor_;
+    EXT_EVENT_HOOK hook_;
+    void* hook_argv_;
+    
     
 };
 
