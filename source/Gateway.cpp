@@ -60,7 +60,10 @@ int Gateway::Start()
 
 int Gateway::Stop()
 {
+    // FIXME-be careful, the net serice must first to be closed.
     Net_Service::instance()->Close();
+    CoAP_Service::instance()->Close();
+    Cfg_Service::instance()->Close();
     
     return 0;
 }

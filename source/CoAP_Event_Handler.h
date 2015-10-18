@@ -13,10 +13,9 @@ class CoAPEventHandler : public ACE_Event_Handler
 {
 public:
 
-    CoAPEventHandler();
+    CoAPEventHandler(struct coap_context_t* ctx );
     ~CoAPEventHandler();
-    void SetCoAPCtx(struct coap_context_t* ctx);
-    
+
     virtual int handle_input (ACE_HANDLE fd);
     virtual int handle_timeout (const ACE_Time_Value &tv,
                                 const void *arg);

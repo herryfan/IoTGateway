@@ -6,24 +6,20 @@
 #include "coap.h"
 
 
-CoAPEventHandler::CoAPEventHandler()
+CoAPEventHandler::CoAPEventHandler(struct coap_context_t* ctx)
+:ctx_(ctx)
 {
+    assert(ctx_ != 0);
 }
 
 CoAPEventHandler::~CoAPEventHandler()
 {
 }
 
-void CoAPEventHandler::SetCoAPCtx(struct coap_context_t* ctx)
-{
-    ctx_ = ctx;
-}
-
 int CoAPEventHandler::handle_input (ACE_HANDLE fd)
 {
     ACE_DEBUG((LM_DEBUG,
                 "call coap event handler handle_input\n"));
-
 
     if ( ctx_ )
     {

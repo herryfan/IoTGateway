@@ -32,6 +32,9 @@ int NetService::Close()
 
     reactor_.end_reactor_event_loop();
     reactor_.close();
+
+    // wait for net service thread to be exited
+    wait();
     
     return 0;
 }

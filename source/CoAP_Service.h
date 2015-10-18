@@ -7,8 +7,10 @@
 
 #include "Config.h"
 
+class RDService;
 class CoAPEventHandler;
 struct coap_context_t;
+
 
 
 class CoAPService
@@ -31,6 +33,7 @@ public:
     
 private:
 
+    RDService* rd_service_;
     CoAPEventHandler* evt_handler_;
     struct coap_context_t* coap_ctx_;
     
