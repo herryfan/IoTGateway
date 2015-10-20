@@ -26,7 +26,7 @@ typedef struct rd_t
     str data;			/**< points to the resource description  */
 } rd_t;
 
-rd_t *resources = NULL;
+static rd_t *resources = NULL;
 
 inline rd_t *
 rd_new()
@@ -47,16 +47,6 @@ rd_delete(rd_t *rd)
         coap_free(rd->data.s);
         coap_free(rd);
     }
-}
-
-/* temporary storage for dynamic resource representations */
-static int quit = 0;
-
-/* SIGINT handler: set quit to 1 for graceful termination */
-void
-handle_sigint(int signum)
-{
-    quit = 1;
 }
 
 void
@@ -362,7 +352,9 @@ hnd_post_rd(coap_context_t  *ctx, struct coap_resource_t *resource,
 #define LOCSIZE 68
     unsigned char *loc;
     size_t loc_size;
-    str h = {0, NULL}, ins = {0, NULL}, rt = {0, NULL}, lt = {0, NULL};		/* store query parameters */
+    
+    /* store query parameters */
+    str h = {0, NULL}, ins = {0, NULL}, rt = {0, NULL}, lt = {0, NULL};
     unsigned char *buf;
 
     loc = (unsigned char *)coap_malloc(LOCSIZE);
@@ -404,7 +396,7 @@ hnd_post_rd(coap_context_t  *ctx, struct coap_resource_t *resource,
         }
 
     }
-    else  			/* generate node identifier */
+    else /* generate node identifier */
     {
         loc_size +=
             snprintf((char *)(loc + loc_size), LOCSIZE - loc_size - 1,
@@ -484,9 +476,7 @@ hnd_post_rd(coap_context_t  *ctx, struct coap_resource_t *resource,
 
     coap_add_resource(ctx, r);
 
-
     /* create response */
-
     response->hdr->code = COAP_RESPONSE_CODE(201);
 
     {
@@ -529,7 +519,7 @@ int RDService::Init()
 
     coap_add_attr(r, (unsigned char *)"ct", 2, (unsigned char *)"40", 2, 0);
     coap_add_attr(r, (unsigned char *)"rt", 2, (unsigned char *)"\"core-rd\"", 9, 0);
-    coap_add_attr(r, (unsigned char *)"ins", 2, (unsigned char *)"\"default\"", 9, 0);
+    coap_add_attr(r, (unsigned char *)"ins", 3, (unsigned char *)"\"default\"", 9, 0);
 
     coap_add_resource(coap_ctx_, r);
     
