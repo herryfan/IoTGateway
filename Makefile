@@ -9,22 +9,29 @@ SOURCE_DIR := $(TOP_DIR)/source
 REF_DIR := $(TOP_DIR)/3rd
 
 # define build macros
-CC = g++
+CC = $(CXX)
 
 CFLAGS += -g 
 CFLAGS += -O2 
 CFLAGS += -DWITH_POSIX
 CFLAGS += -I$(SOURCE_DIR)
-CFLAGS += -I$(REF_DIR)/ace/include 
-CFLAGS += -I$(REF_DIR)/libcoap/include  
 
-LDFLAGS += -L$(REF_DIR)/ace/lib
-LDFLAGS += -L$(REF_DIR)/libcoap/lib
+
+# not cross compile, include ace and libcoap
+ifneq ($(ARCH),arm)
+    CFLAGS += -I$(REF_DIR)/ace/include 
+    CFLAGS += -I$(REF_DIR)/libcoap/include  
+
+    LDFLAGS += -L$(REF_DIR)/ace/lib
+    LDFLAGS += -L$(REF_DIR)/libcoap/lib
+endif
 
 LIBS += -lACE 
 LIBS += -lcoap
 LIBS += -lrt
 LIBS += -lpthread
+LIBS += -lstdc++
+
 
 APP := gateway
 
