@@ -48,7 +48,7 @@ define Build/Install
 	$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/include/ace
 	$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/lib
 	$(CP) -rf $(PKG_BUILD_DIR)/ACE_wrappers/lib/* $(PKG_INSTALL_DIR)/usr/lib
-	$(CP) -rf $(PKG_BUILD_DIR)/ACE_wrappers/ace/*.{h,inl} $(PKG_INSTALL_DIR)/usr/include/ace/
+	$(CP) -rf $(PKG_BUILD_DIR)/ACE_wrappers/ace $(PKG_INSTALL_DIR)/usr/include
 endef
 
 define Build/InstallDev
