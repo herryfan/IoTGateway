@@ -37,6 +37,8 @@ CONFIG_FILE=$LOCAL_PATH/target/config
 CONFIG_DIST_FILE=$WORK_PATH/$LOCAL_TRUNK/.config
 TARGET_DIR=$LOCAL_PATH/target/hisi_x5hd
 TARGET_DIST_DIR=$WORK_PATH/$LOCAL_TRUNK/target/linux
+LIBS_PACKAGE_DIR=$LOCAL_PATH/package
+LIBS_PACKAGE_DIST_DIR=$WORK_PATH/$LOCAL_TRUNK/package/libs
 
 echo $CONFIG_FILE
 
@@ -56,8 +58,16 @@ cd ./$LOCAL_TRUNK
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
+cd -
+
+#put our owns packages into openwrt package
+echo "put local package into openwrt...."
+cp -rf $LIBS_PACKAGE_DIR/* $LIBS_PACKAGE_DIST_DIR/
+
 #make openwrt image 
 echo "======================= building openwrt image ====================="
+
+cd ./$LOCAL_TRUNK
 
 cp -f $CONFIG_FILE $CONFIG_DIST_FILE
 
