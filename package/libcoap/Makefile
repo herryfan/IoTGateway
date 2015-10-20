@@ -45,7 +45,7 @@ endef
 
 define Package/libcoap/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib*.* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/lib/lib*.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libcoap))
