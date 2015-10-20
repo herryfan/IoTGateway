@@ -64,6 +64,17 @@ cd -
 echo "put local package into openwrt...."
 cp -rf $LIBS_PACKAGE_DIR/* $LIBS_PACKAGE_DIST_DIR/
 
+#IoTGateway source
+IoTGATEWAY_SRC=$LOCAL_PATH/source
+IoTGATEWAY_MK=$LOCAL_PATH/Makefile
+IoTGATEWAY_PKG=$LOCAL_PATH/package/IoT/gateway/files
+IoTGATEWAY_DIST_PKG=$WORK_PATH/$LOCAL_TRUNK/package/network
+IoTGATEWAY_PKG_DIR=$LOCAL_PATH/package/IoT
+
+cp -rf $IoTGATEWAY_SRC $IoTGATEWAY_PKG
+cp -rf $IoTGATEWAY_MK $IoTGATEWAY_PKG
+cp -rf $IoTGATEWAY_PKG_DIR $IoTGATEWAY_DIST_PKG
+
 #make openwrt image 
 echo "======================= building openwrt image ====================="
 
