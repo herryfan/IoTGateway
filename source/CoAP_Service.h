@@ -9,9 +9,7 @@
 
 class RDService;
 class CoAPEventHandler;
-struct coap_context_t;
-
-
+class CoAPWrapper;
 
 class CoAPService
 {
@@ -35,7 +33,7 @@ private:
 
     RDService* rd_service_;
     CoAPEventHandler* evt_handler_;
-    struct coap_context_t* coap_ctx_;
+    CoAPWrapper* coap_ctx_;
     
 };
 
