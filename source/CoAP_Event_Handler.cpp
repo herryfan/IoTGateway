@@ -3,13 +3,13 @@
 */
 
 #include "CoAP_Event_Handler.h"
-#include "coap.h"
+#include "CoAP_Wrapper.h"
 
 
-CoAPEventHandler::CoAPEventHandler(struct coap_context_t* ctx)
+CoAPEventHandler::CoAPEventHandler(CoAPWrapper* ctx)
 :ctx_(ctx)
 {
-    assert(ctx_ != 0);
+    ACE_ASSERT(ctx_ != 0);
 }
 
 CoAPEventHandler::~CoAPEventHandler()
@@ -21,12 +21,10 @@ int CoAPEventHandler::handle_input (ACE_HANDLE fd)
     ACE_DEBUG((LM_DEBUG,
                 "call coap event handler handle_input\n"));
 
-    if ( ctx_ )
-    {
-        coap_read( ctx_ );   /* read received data */
-        coap_dispatch( ctx_ );   /* and dispatch PDUs from receivequeue */
-    }
+    if (ctx_)
+        ctx_->DoEventDispatch();
     
+        
     return 0;
 }
 
@@ -43,7 +41,7 @@ ACE_HANDLE CoAPEventHandler::get_handle (void) const
                
     if (ctx_)
     {
-        return ctx_->sockfd;
+        return ctx_->GetMcastHandle();
     }
 
     return -1;    

@@ -7,13 +7,13 @@
 
 #include "Config.h"
 
-struct coap_context_t;
+class CoAPWrapper;
 
 class CoAPEventHandler : public ACE_Event_Handler
 {
 public:
 
-    CoAPEventHandler(struct coap_context_t* ctx );
+    CoAPEventHandler(CoAPWrapper* ctx );
     ~CoAPEventHandler();
 
     virtual int handle_input (ACE_HANDLE fd);
@@ -26,7 +26,7 @@ public:
 
 private:
 
-    struct coap_context_t* ctx_;
+    CoAPWrapper* ctx_;
     
 };
 
