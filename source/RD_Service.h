@@ -6,22 +6,22 @@
 #define __RD_SERVICE_H__
 
 #include "Config.h"
-#include "coap.h"
 
+class CoAPWrapper;
+class CoAP_RD_Resource;
 
 class RDService
 {
 public:
 
-    RDService(struct coap_context_t* ctx);
+    RDService(CoAPWrapper* ctx);
     ~RDService();
 
     int Init();
     int Close();
 
 private:
-
-    struct coap_context_t* coap_ctx_;
+    CoAP_RD_Resource* rd_resource_;
     
 };
 
