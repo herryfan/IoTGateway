@@ -43,6 +43,9 @@ SOURCE_FILES += $(SOURCE_DIR)/NET_Mcast_Service.cpp
 SOURCE_FILES += $(SOURCE_DIR)/CoAP_Service.cpp
 SOURCE_FILES += $(SOURCE_DIR)/CoAP_Event_Handler.cpp
 SOURCE_FILES += $(SOURCE_DIR)/RD_Service.cpp
+SOURCE_FILES += $(SOURCE_DIR)/CoAP_Wrapper.cpp
+SOURCE_FILES += $(SOURCE_DIR)/CoAP_Resource.cpp
+SOURCE_FILES += $(SOURCE_DIR)/CoAP_RD_Resource.cpp
 
 #deinfe targetes
 .PHONY: all
