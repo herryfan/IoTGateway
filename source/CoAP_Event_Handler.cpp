@@ -18,9 +18,6 @@ CoAPEventHandler::~CoAPEventHandler()
 
 int CoAPEventHandler::handle_input (ACE_HANDLE fd)
 {
-    ACE_DEBUG((LM_DEBUG,
-                "call coap event handler handle_input\n"));
-
     if (ctx_)
         ctx_->DoEventDispatch();
     
