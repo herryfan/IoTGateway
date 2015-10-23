@@ -51,6 +51,23 @@ rd_delete(rd_t *rd)
     }
 }
 
+inline void 
+free_rd()
+{
+    if (resources)
+    {
+        rd_t* rd, tmp;
+        
+        HASH_ITER(hh, resources, rd, tmp)
+        {
+            HASH_DELETE(hh, resources, rd);
+            rd_delete(rd);
+        }
+
+        resources = 0;
+    }
+}
+
 void
 hnd_get_resource(coap_context_t  *ctx, struct coap_resource_t *resource,
                  coap_address_t *peer, coap_pdu_t *request, str *token,
@@ -518,7 +535,7 @@ CoAP_RD_Resource::CoAP_RD_Resource(CoAPWrapper* ctx)
 
 CoAP_RD_Resource::~CoAP_RD_Resource()
 {
-
+    free_rd();
 }
 
 
