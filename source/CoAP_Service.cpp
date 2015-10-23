@@ -24,8 +24,10 @@ int CoAPService::Init()
 {
     ACE_TString svc_ip;
     char svc_port[10];
+    int coap_debug_level;
 
     ACE_INET_Addr& svc_addr = Cfg_Service::instance()->GetServerAddr();
+    coap_debug_level = Cfg_Service::instance()->GetCoapDebugLevel();
 
     svc_ip = svc_addr.get_host_addr();
     sprintf(svc_port,"%d",svc_addr.get_port_number());
@@ -33,7 +35,8 @@ int CoAPService::Init()
     
     coap_ctx_ = new CoAPWrapper(); 
 
-    if (coap_ctx_ == 0 || coap_ctx_->Create(svc_ip.c_str(), svc_port) < 0 )
+    if (coap_ctx_ == 0 || coap_ctx_->Create(svc_ip.c_str(), svc_port, 
+                                                    coap_debug_level) < 0 )
     {
         ACE_DEBUG((LM_DEBUG,
                     "Failed to allocate CoAP context\n"));

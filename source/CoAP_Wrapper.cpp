@@ -71,11 +71,11 @@ CoAPWrapper::~CoAPWrapper()
 {
 }
 
-int CoAPWrapper::Create(const char *node, const char *port)
+int CoAPWrapper::Create(const char *node, const char *port, int debug_level)
 {
     ACE_Guard<ACE_Thread_Mutex> guard(*coap_mutex_);
     
-    coap_set_log_level(LOG_WARNING);
+    coap_set_log_level(debug_level);
 
     coap_ctx_ = get_context(node, port);  
     

@@ -20,7 +20,7 @@ public:
     CoAPWrapper();
     ~CoAPWrapper();
 
-    int Create(const char *node, const char *port);
+    int Create(const char *node, const char *port, int debug_level);
     int DoEventDispatch();
     ACE_HANDLE GetMcastHandle();
     int EventHookHandler(ACE_Time_Value& tm);
