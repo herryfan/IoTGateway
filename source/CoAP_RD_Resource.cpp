@@ -56,7 +56,7 @@ free_rd()
 {
     if (resources)
     {
-        rd_t* rd, tmp;
+        rd_t* rd, *tmp;
         
         HASH_ITER(hh, resources, rd, tmp)
         {

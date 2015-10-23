@@ -49,8 +49,8 @@ int CfgService::Init(const char* cfile_name)
 
     /* Get coap debug level*/
     {
-        std::string debug_level("coap_debug");
-        std::string debug_lelvel_value;
+        ACE_TString debug_level("coap_debug");
+        ACE_TString debug_lelvel_value;
 
         code = cfg.get_string_value(key, debug_level.c_str(), debug_lelvel_value);
 
