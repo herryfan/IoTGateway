@@ -6,6 +6,7 @@
 #include "CfgService.h"
 
 CfgService::CfgService()
+:coap_debug_level_(3)
 {
 }
 
@@ -44,6 +45,24 @@ int CfgService::Init(const char* cfile_name)
         "Failed to get section %s\n",gateway_section.c_str()));
 
         return -1;
+    }
+
+    /* Get coap debug level*/
+    {
+        std::string debug_level("coap_debug");
+        std::string debug_lelvel_value;
+
+        code = cfg.get_string_value(key, debug_level.c_str(), debug_lelvel_value);
+
+        if (code < 0 )
+        {
+            ACE_DEBUG((LM_DEBUG,
+                "Not set coap debug level\n"));
+        }
+        else
+        {
+            coap_debug_level_ = atoi(debug_lelvel_value.c_str());
+        }
     }
 
     /* Get server_ip and port string*/
@@ -129,6 +148,10 @@ ACE_INET_Addr& CfgService::GetServerAddr()
     return svc_addr_;
 }
 
+int CfgService::GetCoapDebugLevel()
+{
+    return coap_debug_level_;
+}
 
 
 

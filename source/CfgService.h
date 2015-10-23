@@ -18,6 +18,7 @@ public:
     int Close();
     ACE_INET_Addr& GetMcastAddr();
     ACE_INET_Addr& GetServerAddr();
+    int GetCoapDebugLevel();
     
 private:
 
@@ -26,6 +27,7 @@ private:
     
     ACE_TString cfg_file_;
     ACE_TString svc_uri_;
+    int coap_debug_level_;
 };
 
 typedef ACE_Singleton<CfgService, ACE_Mutex> Cfg_Service;
