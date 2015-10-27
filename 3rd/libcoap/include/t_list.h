@@ -75,8 +75,9 @@
  */
 
 typedef void **list_t;
-struct list {
-  struct list *next;
+struct list
+{
+    struct list *next;
 };
 
 #define LIST_CONCAT(s1, s2) s1##s2
@@ -91,51 +92,60 @@ struct list {
   }
 
 static inline void *
-list_head(list_t the_list) {
-  return *the_list;
-}
-
-static inline void 
-list_remove(list_t the_list, void *item) {
-  if (list_head(the_list))
-    LL_DELETE(*(struct list **)the_list, (struct list *)item);
-}
-
-static inline void 
-list_add(list_t the_list, void *item) {
-  list_remove(the_list, item);
-  LL_APPEND(*(struct list **)the_list, (struct list *)item);
-}
-
-static inline void 
-list_push(list_t the_list, void *item) {
-  LL_PREPEND(*(struct list **)the_list, (struct list *)item);
-}
-
-static inline void *
-list_pop(list_t the_list) {
-  struct list *l;
-  l = (struct list*)*the_list;
-  if(l)
-    list_remove(the_list, l);
-  
-  return l;
+list_head(list_t the_list)
+{
+    return *the_list;
 }
 
 static inline void
-list_insert(list_t the_list, void *previtem, void *newitem) {
-  if(previtem == NULL) {
-    list_push(the_list, newitem);
-  } else {
-    ((struct list *)newitem)->next = ((struct list *)previtem)->next;
-    ((struct list *)previtem)->next = (struct list*)newitem;
-  } 
+list_remove(list_t the_list, void *item)
+{
+    if (list_head(the_list))
+        LL_DELETE(*(struct list **)the_list, (struct list *)item);
+}
+
+static inline void
+list_add(list_t the_list, void *item)
+{
+    list_remove(the_list, item);
+    LL_APPEND(*(struct list **)the_list, (struct list *)item);
+}
+
+static inline void
+list_push(list_t the_list, void *item)
+{
+    LL_PREPEND(*(struct list **)the_list, (struct list *)item);
+}
+
+static inline void *
+list_pop(list_t the_list)
+{
+    struct list *l;
+    l = (struct list*)*the_list;
+    if(l)
+        list_remove(the_list, l);
+
+    return l;
+}
+
+static inline void
+list_insert(list_t the_list, void *previtem, void *newitem)
+{
+    if(previtem == NULL)
+    {
+        list_push(the_list, newitem);
+    }
+    else
+    {
+        ((struct list *)newitem)->next = ((struct list *)previtem)->next;
+        ((struct list *)previtem)->next = (struct list*)newitem;
+    }
 }
 
 static inline void *
 list_item_next(void *item)
 {
-  return item == NULL? NULL: ((struct list *)item)->next;
+    return item == NULL? NULL: ((struct list *)item)->next;
 }
 
 #else /* WITH_CONTIKI */
