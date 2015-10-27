@@ -8,19 +8,22 @@
 
 #include "Config.h"
 
+class CfgService;
+
 class NetMcastService
 {
 public:
 
     NetMcastService();
     ~NetMcastService();
-    
-    int Start();
-    void SetMcast(ACE_HANDLE handle);
+
+    int join(ACE_HANDLE default_handle = 0);
+    void SetConf(CfgService *conf);
     
 private:
     
     ACE_SOCK_Dgram_Mcast mcast_;
+    CfgService *conf_;
 };
 
 

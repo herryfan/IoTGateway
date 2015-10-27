@@ -20,22 +20,23 @@ public:
     int Init();
     int Start();
     int Close();
-    int Run();
 
-    void SetMcast(ACE_HANDLE handle);
+    void SetConf(CfgService *conf);
+    int join(ACE_HANDLE handle);
     int RegHandler(ACE_Event_Handler *event_handler,
                    ACE_Reactor_Mask mask);
-
-    int RegEventHook(EXT_EVENT_HOOK hook, void* argv);
+    long schedule_timer(ACE_Event_Handler *event_handler,
+                               const void *arg,
+                               const ACE_Time_Value &delay);    
     virtual int svc (void);
     
 private:
-    
+
+    int Run();
+
+    CfgService *svc_conf_;
     NetMcastService mcast_svc_;
     ACE_Reactor reactor_;
-    EXT_EVENT_HOOK hook_;
-    void* hook_argv_;
-    
     
 };
 

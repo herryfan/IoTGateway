@@ -15,11 +15,17 @@ NetMcastService::~NetMcastService()
 {
 }
 
-int NetMcastService::Start()
+int NetMcastService::join(ACE_HANDLE default_handle)
 {    
-    int code = mcast_.join(Cfg_Service::instance()->GetMcastAddr());
+    if (default_handle >= 0)
+    {
+        mcast_.set_handle(default_handle);
+    }
 
-    if (code == -1)
+    ACE_INET_Addr mcast;
+    mcast.set(conf_->mcast_addr_port_, conf_->mcast_addr_.c_str());
+    
+    if (mcast_.join(mcast) == -1)
     {
         ACE_DEBUG((LM_DEBUG,
                     "Failed to join into multicast group\n"));
@@ -30,19 +36,9 @@ int NetMcastService::Start()
     return 0;
 }
 
-void NetMcastService::SetMcast(ACE_HANDLE handle)
+void NetMcastService::SetConf(CfgService *conf)
 {
-    mcast_.set_handle(handle);
+    conf_ = conf;
 }
-
-
-
-
-
-
-
-
-
-
 
 
