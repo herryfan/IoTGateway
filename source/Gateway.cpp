@@ -6,49 +6,51 @@
 #include "Gateway.h"
 #include "CfgService.h"
 #include "NET_Service.h"
-#include "CoAP_Service.h"
+#include "RD_Service.h"
 
 
 int Gateway::Init()
 {
-    int code = Cfg_Service::instance()->Init("gateway.conf");
+    svc_conf_ = new CfgService();
+    svc_net_ = new NetService();
+
+    if ( svc_conf_ == 0 || 
+         svc_net_ == 0 )
+    {
+        return -1;
+    }
+
     
-    if (code == -1 )
+    if (svc_conf_->Init("gateway.conf") < 0)
     {
         return -1;
     }
 
-    code = Net_Service::instance()->Init();
+    svc_net_->SetConf(svc_conf_);
     
-    if (code == -1 )
+    if (svc_net_->Init() < 0)
     {
         return -1;
     }
 
-    code = CoAP_Service::instance()->Init();
 
-    if (code == -1 )
+    if ((svc_rd_ = new RDService(svc_conf_, svc_net_)) == 0)
     {
         return -1;
     }
 
-    Net_Service::instance()->SetMcast(
-                            CoAP_Service::instance()->GetMcastHandle());
+    if (svc_rd_->Init() < 0)
+    {
+        return -1;
+    }
 
-    Net_Service::instance()->RegHandler(CoAP_Service::instance()->GetEventHandler(),
-                                      ACE_Event_Handler::READ_MASK);
-
-    Net_Service::instance()->RegEventHook(CoAPService::EventHook, 
-                                (void*)(CoAP_Service::instance()));
-                                
     return 0;
+
 }
 
 int Gateway::Start()
 {
-    int code = Net_Service::instance()->Start();
-
-    if (code == -1)
+    if (svc_net_->Start() == -1)
     {
         ACE_DEBUG((LM_DEBUG,
                     "Failed to start net service \n"));
@@ -61,22 +63,34 @@ int Gateway::Start()
 int Gateway::Stop()
 {
     // FIXME-be careful, the net serice must first to be closed.
-    Net_Service::instance()->Close();
-    CoAP_Service::instance()->Close();
-    Cfg_Service::instance()->Close();
+    svc_rd_->Close();
+    svc_net_->Close();
+    svc_conf_->Close();
+
+    Close();
     
     return 0;
 }
 
-int Gateway::Run()
+int Gateway::Close()
 {
-    int code = Net_Service::instance()->Run();
+    if (svc_rd_ )
+    {
+        delete svc_rd_;
+        svc_rd_ = 0;
+    }
 
-    if (code == -1 )
-        return -1;
+    if (svc_net_ )
+    {
+        delete svc_net_;
+        svc_net_ = 0;
+    }
 
-    
-    Net_Service::instance()->wait();
+    if (svc_conf_ )
+    {
+        delete svc_conf_;
+        svc_conf_ = 0;
+    }
     
     return 0;
 }

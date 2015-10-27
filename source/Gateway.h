@@ -7,6 +7,11 @@
 
 #include "Config.h"
 
+
+class CfgService;
+class NetService;
+class RDService;
+
 class Gateway
 {
 public:
@@ -14,10 +19,14 @@ public:
       int Init();
       int Start();
       int Stop();
-      int Run();
-
+      int Close();
+      
 private:
 
+    CfgService *svc_conf_;
+    NetService *svc_net_;
+    RDService  *svc_rd_;
+    
 };
 
 // Use ACE Singleton wrapper Gateway object.
