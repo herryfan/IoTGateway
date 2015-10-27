@@ -20,19 +20,9 @@ int main(int argc, char** argv)
     
     if ( IoTGateway::instance()->Init() >= 0)
     {
-        int code = IoTGateway::instance()->Start();
-
-        if ( code >= 0 )
-        {
-            IoTGateway::instance()->Run();
-            IoTGateway::instance()->Stop();
-        }
-        else
-        {
-           ACE_DEBUG((LM_DEBUG,
-                    "Failed to start gateway, please check...\n"));
-        }
-    }
+        IoTGateway::instance()->Start();
+        IoTGateway::instance()->Stop();
+    }  
     else
     {
         ACE_DEBUG((LM_DEBUG,
