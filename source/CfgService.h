@@ -7,6 +7,8 @@
 
 #include "Config.h"
 
+class ACE_Ini_ImpExp;
+
 class CfgService
 {
 public:
@@ -16,18 +18,30 @@ public:
 
     int Init(const char* cfile_name);
     int Close();
-    ACE_INET_Addr& GetMcastAddr();
-    ACE_INET_Addr& GetServerAddr();
-    int GetCoapDebugLevel();
     
+    ACE_TString mcast_addr_;
+    int mcast_addr_port_;
+    ACE_TString svc_addr_;
+    int svc_addr_port_;
+    ACE_TString proxy_addr_;
+    int proxy_addr_port_;
+    ACE_TString rd_addr_;
+    int rd_addr_port_;
+
+    bool enable_proxy_;
+    bool enable_rd_;    
+    int coap_debug_level_;
+
 private:
 
-    ACE_INET_Addr multicast_addr_;
-    ACE_INET_Addr svc_addr_;
-    
+    void Default();
+    int GetValue(const char* item, ACE_TString &value);
+    int GetValue(const char* item, int &value);
+    int GetValue(const char* item, bool &value);
+
     ACE_TString cfg_file_;
-    ACE_TString svc_uri_;
-    int coap_debug_level_;
+    
+    ACE_Configuration_Heap *conf_;
 };
 
 typedef ACE_Singleton<CfgService, ACE_Mutex> Cfg_Service;

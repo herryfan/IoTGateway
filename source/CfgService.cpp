@@ -6,156 +6,131 @@
 #include "CfgService.h"
 
 CfgService::CfgService()
-:coap_debug_level_(3)
+:conf_(0)
 {
+    Default();
+}
+
+void CfgService::Default()
+{
+    mcast_addr_ = "ff05::fd";
+    mcast_addr_port_ = 5683;
+    svc_addr_ = "::";
+    svc_addr_port_ = 5683;
+    proxy_addr_ = "::";
+    proxy_addr_port_ = 5683;
+    rd_addr_ = "::";
+    rd_addr_port_ = 5683;
+
+    enable_proxy_ = true;
+    enable_rd_ = true;
+
+    cfg_file_ = "gateway.conf";
+    coap_debug_level_ = 3;
 }
 
 CfgService::~CfgService()
 {
+    Close();
+}
+
+
+int CfgService::GetValue(const char* item, ACE_TString &value)
+{
+    ACE_Configuration_Section_Key key;
+    std::string gateway_section("gateway");
+
+    int code = conf_->open_section(conf_->root_section(), 
+                     gateway_section.c_str(), 
+                     0,
+                     key);
+
+     
+    if (code < 0 )
+    {
+     ACE_DEBUG((LM_DEBUG, 
+     "Failed to get section %s\n",gateway_section.c_str()));
+
+     return -1;
+    }
+    
+    return conf_->get_string_value(key, item, value);
+    
+}
+
+int CfgService::GetValue(const char* item, int &value)
+{
+    ACE_TString value_s;
+
+    if (GetValue(item, value_s) >= 0 )
+    {
+        value = ACE_OS::atoi(value_s.c_str());
+    }
+
+    return 0;
+}
+
+int CfgService::GetValue(const char* item, bool &value)
+{
+    ACE_TString value_s;
+
+    if (GetValue(item, value_s) >= 0 )
+    {
+        value = (::strcasecmp(
+                value_s.c_str(), "true")
+                ) == 0 ? true: false;
+    }
+
+    return 0;
+
 }
 
 int CfgService::Init(const char* cfile_name)
 {
-    ACE_Configuration_Heap cfg;
-    ACE_Ini_ImpExp ini(cfg);
+    conf_ = new ACE_Configuration_Heap();
+
+    ACE_ASSERT(conf_ != NULL);
+    
+    ACE_Ini_ImpExp ini(*conf_);
     cfg_file_ = cfile_name;
 
-    cfg.open();
+    conf_->open();
 
     if ( ini.import_config(cfg_file_.c_str()) == -1)
     {
         ACE_DEBUG((LM_DEBUG, 
         "Failed to open config file %s. please check...\n",
         cfg_file_.c_str()));
-
+        
         return -1;
     }
 
-    ACE_Configuration_Section_Key key;
-    std::string gateway_section("gateway");
-
-    int code = cfg.open_section(cfg.root_section(), 
-                     gateway_section.c_str(), 
-                     0,
-                     key);
-                     
-    if (code < 0 )
-    {
-        ACE_DEBUG((LM_DEBUG, 
-        "Failed to get section %s\n",gateway_section.c_str()));
-
-        return -1;
-    }
-
-    /* Get coap debug level*/
-    {
-        ACE_TString debug_level("coap_debug");
-        ACE_TString debug_lelvel_value;
-
-        code = cfg.get_string_value(key, debug_level.c_str(), debug_lelvel_value);
-
-        if (code < 0 )
-        {
-            ACE_DEBUG((LM_DEBUG,
-                "Not set coap debug level\n"));
-        }
-        else
-        {
-            coap_debug_level_ = atoi(debug_lelvel_value.c_str());
-        }
-    }
-
-    /* Get server_ip and port string*/
-    ACE_TString server_ip("server_ip");
-    ACE_TString server_port("server_port");
-    ACE_TString svr_ip;
-    ACE_TString svr_port;
+    GetValue("multicast_addr", mcast_addr_);
+    GetValue("multicast_addr_port", mcast_addr_port_);
+    GetValue("server_addr", svc_addr_);
+    GetValue("server_addr_port", svc_addr_port_);
+    GetValue("proxy_addr", proxy_addr_);
+    GetValue("proxy_addr_port", proxy_addr_port_);
+    GetValue("rd_addr", rd_addr_);
+    GetValue("rd_addr_port", rd_addr_port_);
     
-    code = cfg.get_string_value(key, server_ip.c_str(), svr_ip);
-    code |= cfg.get_string_value(key, server_port.c_str(), svr_port);
-
-    if (code < 0 )
-    {
-        ACE_DEBUG((LM_DEBUG,
-                   "Failed to get server ip and port\n"));
-
-        return -1;
-    }
-
-    code = svc_addr_.set(atoi(svr_port.c_str()),svr_ip.c_str());
-
-    if ( code < 0 )
-    {
-        ACE_DEBUG((LM_DEBUG,
-                    "Failed to set server ip and port,"
-                    "maybe the port and ip not to be correctly config\n"));
-    }
-
-    /* Get multicast ip and port */
-    ACE_TString mcast_ip("multicast_ip");
-    ACE_TString mcast_port("multicast_port");
-    ACE_TString multicast_ip;
-    ACE_TString multicast_port;
-
-    code = cfg.get_string_value(key, mcast_ip.c_str(), multicast_ip);
-    code |= cfg.get_string_value(key, mcast_port.c_str(), multicast_port);
-
-    if (code < 0 )
-    {
-        ACE_DEBUG((LM_DEBUG,
-                   "Failed to get multicast ip and port\n"));
-
-        return -1;
-    }
-
-    code = multicast_addr_.set(atoi(multicast_port.c_str()),multicast_ip.c_str());
-
-    if ( code < 0 )
-    {
-        ACE_DEBUG((LM_DEBUG,
-                    "Failed to set multicast ip and port,"
-                    "maybe the port and ip not to be correctly config\n"));
-    }
-    
-    //
-    // Debug information
-    //
-    ACE_DEBUG((LM_DEBUG,
-               "dump cfg information\n"));
-               
-    ACE_TCHAR s[ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16];
-    multicast_addr_.addr_to_string(s, ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16);
-    ACE_DEBUG ((LM_DEBUG, ACE_TEXT ("%s\n"), s));
-
-    svc_addr_.addr_to_string(s, ACE_MAX_FULLY_QUALIFIED_NAME_LEN + 16);
-    ACE_DEBUG ((LM_DEBUG, ACE_TEXT ("%s\n"), s));
+    GetValue("enable_proxy", enable_proxy_);
+    GetValue("enable_rd", enable_rd_);
+    GetValue("coap_debug", coap_debug_level_);
     
     return 0;
 }
 
 int CfgService::Close()
 {
+    if (conf_)
+    {
+        delete conf_;
+        conf_ = 0;
+    }
+
     return 0;
 }
-
-ACE_INET_Addr& CfgService::GetMcastAddr()
-{
-    return multicast_addr_;
-}
-
-ACE_INET_Addr& CfgService::GetServerAddr()
-{
-    return svc_addr_;
-}
-
-int CfgService::GetCoapDebugLevel()
-{
-    return coap_debug_level_;
-}
-
-
-
-
 
 
 
