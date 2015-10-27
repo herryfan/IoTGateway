@@ -22,7 +22,7 @@ get_context(const char *node, const char *port)
     ACE_DEBUG((LM_DEBUG,
                 "gataddrinfo: %s-%s\n", node, port));
 
-    s = getaddrinfo("::", "5683", &hints, &result);
+    s = getaddrinfo(node, port, &hints, &result);
     if ( s != 0 )
     {
         ACE_DEBUG((LM_DEBUG,
@@ -71,13 +71,18 @@ CoAPWrapper::~CoAPWrapper()
 {
 }
 
-int CoAPWrapper::Create(const char *node, const char *port, int debug_level)
+int CoAPWrapper::Create(ACE_TString &node, int port, int debug_level)
 {
+    char port_buf[20];
+
+    sprintf(port_buf, "%d", port);
+    port_buf[19] = '\0';
+    
     ACE_Guard<ACE_Thread_Mutex> guard(*coap_mutex_);
     
     coap_set_log_level(debug_level);
 
-    coap_ctx_ = get_context(node, port);  
+    coap_ctx_ = get_context(node.c_str(), port_buf);  
     
     if (coap_ctx_ == 0)
     {
@@ -90,7 +95,7 @@ int CoAPWrapper::Create(const char *node, const char *port, int debug_level)
     return 0;
 }
 
-int CoAPWrapper::DoEventDispatch()
+int CoAPWrapper::handle_event()
 {
     // FIXME: becareful, dont use ACE_Guard at here
     // maybe cause thread died locked
@@ -104,7 +109,7 @@ int CoAPWrapper::DoEventDispatch()
     return 0;
 }
 
-ACE_HANDLE CoAPWrapper::GetMcastHandle()
+ACE_HANDLE CoAPWrapper::get_handle()
 {
     ACE_Guard<ACE_Thread_Mutex> guard(*coap_mutex_);
     
@@ -116,7 +121,7 @@ ACE_HANDLE CoAPWrapper::GetMcastHandle()
     return -1;
 }
 
-int CoAPWrapper::EventHookHandler(ACE_Time_Value& tm)
+int CoAPWrapper::time_out(ACE_Time_Value& tm)
 {
     struct timeval tv, *timeout;
     int result;
