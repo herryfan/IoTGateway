@@ -11,6 +11,7 @@
 class CfgService;
 class NetService;
 class RDService;
+class FWProxyService;
 
 class Gateway
 {
@@ -26,6 +27,7 @@ private:
     CfgService *svc_conf_;
     NetService *svc_net_;
     RDService  *svc_rd_;
+    FWProxyService *svc_proxy_;
     
 };
 

@@ -7,7 +7,7 @@
 #include "CfgService.h"
 #include "NET_Service.h"
 #include "RD_Service.h"
-
+#include "FW_Proxy_Service.h"
 
 int Gateway::Init()
 {
@@ -44,6 +44,16 @@ int Gateway::Init()
         return -1;
     }
 
+    if((svc_proxy_= new FWProxyService(svc_conf_, svc_net_)) == 0)
+    {
+        return -1;
+    }
+
+    if (svc_proxy_->Init() < 0)
+    {
+        return -1;
+    }
+
     return 0;
 
 }
@@ -66,6 +76,7 @@ int Gateway::Stop()
     svc_rd_->Close();
     svc_net_->Close();
     svc_conf_->Close();
+    svc_proxy_->Close();
 
     Close();
     
@@ -74,6 +85,12 @@ int Gateway::Stop()
 
 int Gateway::Close()
 {
+    if (svc_proxy_)
+    {
+        delete svc_proxy_;
+        svc_proxy_ = 0;
+    }
+    
     if (svc_rd_ )
     {
         delete svc_rd_;

@@ -21,6 +21,7 @@ public:
     ~CoAPWrapper();
 
     int Create(ACE_TString &node, int port, int debug_level);
+    int enable_proxy();
     int handle_event();
     ACE_HANDLE get_handle();
     int time_out(ACE_Time_Value& tm);

@@ -196,7 +196,12 @@ int CoAPWrapper::CreateResource(std::string uri,
     
 }
 
+int CoAPWrapper::enable_proxy()
+{
+    coap_set_proxy_flag(coap_ctx_, 1);
 
+    return 0;
+}
 
 
 
