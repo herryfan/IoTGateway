@@ -97,6 +97,7 @@ typedef struct coap_resource_t
      * static memory. */
     str uri;
     int flags;
+    void *app_contex;
 
 } coap_resource_t;
 
@@ -112,6 +113,10 @@ typedef struct coap_resource_t
  * @return A pointer to the new object or @c NULL on error.
  */
 coap_resource_t *coap_resource_init(const unsigned char *uri, size_t len, int flags);
+coap_resource_t *coap_resource_init_with_app_context(const unsigned char *uri, 
+                                                     size_t len, 
+                                                     int flags, 
+                                                     void *app_context);
 
 /**
  * Registers the given @p resource for @p context. The resource must
