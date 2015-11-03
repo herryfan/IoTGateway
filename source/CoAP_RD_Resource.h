@@ -8,17 +8,28 @@
 #include "CoAP_Resource.h"
 
 class CoAPWrapper;
+class CoAPCallback;
 
 class CoAP_RD_Resource : public CoAPResource
 {
 public:
     
     CoAP_RD_Resource(CoAPWrapper* ctx);
-    ~CoAP_RD_Resource();
+    virtual ~CoAP_RD_Resource();
 
-    int Create();
+    void* Create();
+    
+    virtual void handler_post(CoAPCallback &callback); 
+
+protected:
+
+    CoAPResource *create_node_resource(CoAPCallback &callback, std::string &domain, std::string &ep);
+    std::string create_node_uri(std::string base);
+    void response_ok(CoAPResource *node, CoAPCallback &callback);
 
 private:
+
+    void *rd_resource_;
     
 };
 

@@ -48,7 +48,7 @@ int RDService::Init()
         return -1;
     }
 
-    if ((rd_resource_->Create()) < 0)
+    if ((rd_resource_->Create()) == 0)
     {
         ACE_DEBUG((LM_DEBUG,"Failed to craete rd resource\n"));
         return -1;
