@@ -5,6 +5,7 @@
 #include "RD_Service.h"
 #include "CoAP_Wrapper.h"
 #include "CoAP_RD_Resource.h"
+#include "CoAP_RD_Lookup_Resource.h"
 #include "CfgService.h"
 #include "NET_Service.h"
 
@@ -13,7 +14,8 @@ RDService::RDService(CfgService *conf, NetService *net)
 :conf_(conf),
 net_(net),
 coap_wrapper_(0),
-rd_resource_(0)
+rd_resource_(0),
+lookup_resource_(0)
 {
 }
 
@@ -53,6 +55,18 @@ int RDService::Init()
         ACE_DEBUG((LM_DEBUG,"Failed to craete rd resource\n"));
         return -1;
     }
+    
+    if ((lookup_resource_ = new CoAPRDLookUpResource(coap_wrapper_)) == 0)
+    {
+        ACE_DEBUG((LM_DEBUG, "Failed to allocate lookup resource in RD\n"));
+        return -1;
+    }
+
+    if ((lookup_resource_->Create()) == 0)
+    {
+        ACE_DEBUG((LM_DEBUG,"Failed to craete lookup resource\n"));
+        return -1;
+    }
 
     net_->join(coap_wrapper_->get_handle());
     net_->RegHandler(this, ACE_Event_Handler::READ_MASK);
@@ -71,6 +85,11 @@ int RDService::Close()
     if (rd_resource_ )
     {
         delete rd_resource_;
+    }
+
+    if (lookup_resource_)
+    {
+        delete lookup_resource_;
     }
         
     return 0;

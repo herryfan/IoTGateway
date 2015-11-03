@@ -11,6 +11,7 @@ class CoAPWrapper;
 class CoAP_RD_Resource;
 class CfgService;
 class NetService;
+class CoAPRDLookUpResource;
 
 class RDService : public ACE_Event_Handler
 {
@@ -30,7 +31,8 @@ public:
 
 private:
     
-    CoAP_RD_Resource* rd_resource_;
+    CoAP_RD_Resource *rd_resource_;
+    CoAPRDLookUpResource *lookup_resource_;
     CfgService *conf_;
     NetService *net_;
     CoAPWrapper *coap_wrapper_;

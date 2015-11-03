@@ -25,7 +25,7 @@ void* CoAP_RD_Resource::Create()
     
     SetURI(uri);
     attr.insert(std::make_pair("ct","40"));
-    attr.insert(std::make_pair("rt","\"core-rd\""));
+    attr.insert(std::make_pair("rt","\"core.rd\""));
     attr.insert(std::make_pair("ins","\"default\""));
 
     SetAttr(attr);
