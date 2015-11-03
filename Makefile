@@ -45,6 +45,10 @@ SOURCE_FILES += $(SOURCE_DIR)/CoAP_Wrapper.cpp
 SOURCE_FILES += $(SOURCE_DIR)/CoAP_Resource.cpp
 SOURCE_FILES += $(SOURCE_DIR)/CoAP_RD_Resource.cpp
 SOURCE_FILES += $(SOURCE_DIR)/CoAP_RD_Node_Resource.cpp
+SOURCE_FILES += $(SOURCE_DIR)/CoAP_RD_Lookup_Resource.cpp
+SOURCE_FILES += $(SOURCE_DIR)/CoAP_RD_Lookup_D_Resource.cpp
+SOURCE_FILES += $(SOURCE_DIR)/CoAP_RD_Lookup_EP_Resource.cpp
+SOURCE_FILES += $(SOURCE_DIR)/CoAP_RD_Lookup_RES_Resource.cpp
 SOURCE_FILES += $(SOURCE_DIR)/FW_Proxy_Service.cpp
 
 #deinfe targetes
